@@ -1,20 +1,19 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.15;
 
-import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract YoloToken is ERC20Upgradeable, OwnableUpgradeable {
+contract YoloToken is ERC20("Yolo Token", "YOLO"), Ownable {
     uint public buyTax;
     uint public sellTax;
     address public sentTo;
 
     mapping(address => bool) public pools;
     mapping(address => bool) public excludes;
+    uint256 public Y_ONE = 1e3;
 
-    function initialize(address _sentTo) external initializer {
-        __ERC20_init("Yolo Token", "YOLO");
-        __Ownable_init();
+    constructor(address _sentTo) {
         sentTo = _sentTo;
 
         // 100 Milion
@@ -24,7 +23,8 @@ contract YoloToken is ERC20Upgradeable, OwnableUpgradeable {
         excludes[address(this)] = true;
     }
 
-    function setInfo(uint _bTax, uint _sTax, uint _percent) external onlyOwner {
+    // 10% = 100, 1% = 10, 100% = 1000
+    function setInfo(uint _bTax, uint _sTax) external onlyOwner {
         buyTax = _bTax;
         sellTax = _sTax;
     }
@@ -56,16 +56,16 @@ contract YoloToken is ERC20Upgradeable, OwnableUpgradeable {
             unchecked {
                 // if buy
                 if (pools[from]) {
-                    taxAmt = (amount * buyTax) / 1e3;
+                    taxAmt = (amount * buyTax) / Y_ONE;
                 }
                 // if sell
                 else if (pools[to]) {
-                    taxAmt = (amount * sellTax) / 1e3;
+                    taxAmt = (amount * sellTax) / Y_ONE;
                 }
 
                 if (taxAmt != 0) {
                     amount -= taxAmt;
-                    super._transfer(from, address(this), taxAmt);
+                    super._transfer(from, sentTo, taxAmt);
                 }
             }
         }

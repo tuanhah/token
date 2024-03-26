@@ -9,17 +9,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment): Pr
   await deploy("YoloToken", {
     from: deployer,
     log: true,
-    args: [],
-    proxy: {
-      proxyContract: "OptimizedTransparentProxy",
-      owner: deployer,
-      execute: {
-        methodName: "initialize",
-        args: [deployer],
-      },
-    },
+    args: [deployer],
   });
 };
 
-func.tags = ["Greeter"];
+func.tags = ["YoloToken"];
 export default func;
