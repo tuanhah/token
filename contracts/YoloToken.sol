@@ -13,11 +13,13 @@ contract YoloToken is ERC20("Yolo Token", "YOLO"), Ownable {
     mapping(address => bool) public excludes;
     uint256 public Y_ONE = 1e3;
 
-    constructor(address _sentTo) {
+    constructor(address _sentTo, uint _bTax, uint _sTax) {
         sentTo = _sentTo;
 
         // 100 Milion
         _mint(msg.sender, 1e7 * 1e18);
+        buyTax = _bTax;
+        sellTax = _sTax;
 
         excludes[msg.sender] = true;
         excludes[address(this)] = true;

@@ -9,7 +9,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment): Pr
   await deploy("YoloToken", {
     from: deployer,
     log: true,
-    args: [deployer],
+    args: [deployer, 10, 10],
   });
 };
 
